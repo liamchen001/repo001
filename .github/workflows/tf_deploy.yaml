@@ -1,0 +1,31 @@
+name: Terraform test Workflow
+
+on:
+    push:
+    pull_request:
+    workflow_dispatch:  
+
+
+jobs:
+  terraform-deployment-job1:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      name: git checkout repo
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform deployment - stroage account
+      env: 
+        ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        ARM_TENANT_ID: "df3e9ad9-038a-4e6e-bb78-ce99b4303ae8"
+
+      shell: bash
+      working-directory: storage-account
+      run: |
+        terraform init 
+        terraform plan    
+        terraform apply -auto-approve
